@@ -5,7 +5,7 @@ import sqlite3
 
 class Servicios:
 
-    db_name = 'database.db'
+    db_name = 'basePagos.db'
 
     def __init__(self, window):
         self.wind = window
@@ -34,8 +34,7 @@ class Servicios:
         self.tree.grid(row = 4, column = 0, columnspan = 2)
         self.tree.heading('#0', text = 'Servicio', anchor = CENTER)
         self.tree.heading('#1', text = 'Importe', anchor = CENTER)
-
-        self.get_products
+        self.get_pagos()
 
     def run_query(self, query, parameters = ()):
         with sqlite3.connect(self.db_name) as conn:
@@ -44,14 +43,15 @@ class Servicios:
             conn.commit()
         return result
 
-    def get_products(self):
+    def get_pagos(self):
         # cleaning table
         records = self.tree.get_children()
         for element in records:
             self.tree.delete(element)
         # quering data
-        query = 'SELECT * FROM Pago de servicios ORDER BY name DESC'
+        query = 'SELECT * FROM PagoMes ORDER BY id DESC'
         db_rows = self.run_query(query)
+
         # filling data
         for row in db_rows:
             self.tree.insert('', 0, text = row[1], values = row[2])

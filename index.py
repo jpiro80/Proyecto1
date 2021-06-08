@@ -53,7 +53,7 @@ class Product:
             conn.commit()
         return result
 
-    def get_product(self):
+    def get_products(self):
         # cleaning table
         records = self.tree.get_children()
         for element in records:
@@ -94,7 +94,7 @@ class Product:
         self.message['text'] = 'Record {} deleted Successfully'.format(name)
         self.get_products()
 
-        def edit_product(self):
+    def edit_product(self):
         self.message['text'] = ''
         try:
             self.tree.item(self.tree.selection())['text']
