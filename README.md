@@ -16,8 +16,5 @@
 
 ![Cuadro 04](Cuadro04.png)
 
-### El problema que surge, es que en el tutorial al parecer utilizan Linux y otro programa para ejecutar archivos .py, por lo cual al hacer la ejecución con el Python 3.9 en Windows, el resultado que obtengo es el siguiente:
-![Cuadro 05](Cuadro05.png)
-### La tabla no se inserta en el cuadro y me marca esos errores.
-
-### El archivo principal es index.py y el archivo a de base de datos a insertar es database.db Ambos se encuentran en el repositorio.
+### Y este es el resultado final
+![Cuadro 06](Cuadro06.png)
