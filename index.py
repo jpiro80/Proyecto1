@@ -12,22 +12,22 @@ class Product:
         self.wind.title('Pagos del mes')
 
         # Creating a Frame Container
-        frame = LabelFrame(self.wind, text = 'Agregar nuevo impuesto') 
-        frame.grid(row = 0, column = 0, columnspan = 3, pady = 20)   
+        frame = LabelFrame(self.wind, text = 'Agregar un nuevo impuesto') 
+        frame.grid(row = 0, column = 0, columnspan = 3, pady = 20)
 
-        # Impuesto Input
+        # Name Input
         Label(frame, text = 'Impuesto: ').grid(row = 1, column = 0)
-        self.Impuesto = Entry(frame)
-        self.Impuesto.focus()
-        self.Impuesto.grid(row = 1, column = 1)
+        self.name = Entry(frame)
+        self.name.focus()
+        self.name.grid(row = 1, column = 1)
 
-        # Importe Input
+        # Price Input
         Label(frame, text = 'Importe: ').grid(row = 2, column = 0)
-        self.Importe = Entry(frame)
-        self.Importe.grid(row = 2, column = 1)
+        self.price = Entry(frame)
+        self.price.grid(row = 2, column = 1)
 
         # Button Add Product
-        ttk.Button(frame, text = 'Guardar cambios', command = self.add_product).grid(row = 3, columnspan = 2, sticky = W + E)
+        ttk.Button(frame, text = 'Agregar', command = self.add_product).grid(row = 3, columnspan = 2, sticky = W + E)
 
         # Output Messages
         self.message = Label(text = '', fg = 'red')
@@ -59,80 +59,79 @@ class Product:
         for element in records:
             self.tree.delete(element)
         # quering data
-        query = 'SELECT * FROM product ORDER BY id DESC'
+        query = 'SELECT * FROM product ORDER BY name DESC'
         db_rows = self.run_query(query)
         # filling data
         for row in db_rows:
             self.tree.insert('', 0, text = row[1], values = row[2])
 
     def validation(self):
-        return len(self.Impuesto.get()) != 0 and len(self.Importe.get()) !=0
+        return len(self.name.get()) != 0 and len(self.price.get()) !=0
 
     def add_product(self):
         if self.validation():
             query = 'INSERT INTO product VALUES(NULL, ?, ?)'
-            parameters = (self.Impuesto.get(), self.Importe.get())
+            parameters = (self.name.get(), self.price.get())
             self.run_query(query, parameters)
-            self.message['text'] = 'Product {} added Successfully'.format(self.Impuesto.get())
-            self.Impuesto.delete(0, END)
-            self.Importe.delete(0, END)
+            self.message['text'] = 'El impuesto {} fue agregado correctamente'.format(self.name.get())
+            self.name.delete(0, END)
+            self.price.delete(0, END)
         else:
-            self.message['text'] = 'Impuesto e importe son requeridos'
+            self.message['text'] = 'Por favor, rellene los campos vacíos'
         self.get_products()
 
     def delete_product(self):
         self.message['text'] = ''
         try:
-            self.tree.item(self.tree.selection())['text']
+            self.tree.item(self.tree.selection())['text'][0]
         except IndexError as e:
-            self.message['text'] = 'Please Select a Record'
+            self.message['text'] = 'No se ha seleccionado un impuesto'
             return
-        self.message['text'] = ''
-        Impuesto = self.tree.item(self.tree.selection())['text'][0]
-        query = 'DELETE FROM product WHERE Impuesto = ?'
-        self.run_query(query, (Impuesto, ))
-        self.message['text'] = 'Record {} deleted Successfully'.format(Impuesto)
+        name = self.tree.item(self.tree.selection())['text']
+        query = 'DELETE FROM product WHERE name = ?'
+        self.run_query(query, (name, ))
+        self.message['text'] = 'El impuesto {} fue eliminado correctamente'.format(name)
         self.get_products()
 
     def edit_product(self):
         self.message['text'] = ''
         try:
-            self.tree.item(self.tree.selection())['text']
+            self.tree.item(self.tree.selection())['text'][0]
         except IndexError as e:
-            self.message['text'] = 'Please Select a Record'
+            self.message['text'] = 'No se ha seleccionado un impuesto'
             return
-        Impuesto = self.tree.item(self.tree.selection())['text']
-        Importe_Anterior = self.tree.item(self.tree.selection())['values'][0]
+        name = self.tree.item(self.tree.selection())['text']
+        old_price = self.tree.item(self.tree.selection())['values'][0]
         self.edit_wind = Toplevel()
         self.edit_wind.title = 'Edit Product'
 
-        # Impuesto Anterior
-        Label(self.edit_wind, text = 'Impuesto anterior: ').grid(row = 0, column = 1)
-        Entry(self.edit_wind, textvariable =StringVar(self.edit_wind, value = Impuesto), state ='readonly').grid(row = 0, column = 2)
-        # Nuevo Impuesto
-        Label(self.edit_wind, text = 'Nuevo Impuesto').grid(row = 1, column = 1)
-        Nuevo_Impuesto = Entry(self.edit_wind)
-        Nuevo_Impuesto.grid(row = 1, column = 2)
+        # Old Name
+        Label(self.edit_wind, text = 'Impuesto actual: ').grid(row = 0, column = 1)
+        Entry(self.edit_wind, textvariable = StringVar(self.edit_wind, value = name), state = 'readonly').grid(row = 0, column = 2)
+        # New Name
+        Label(self.edit_wind, text = 'Nuevo impuesto').grid(row = 1, column = 1)
+        new_name = Entry(self.edit_wind)
+        new_name.grid(row = 1, column = 2)
 
-        # Importe Anterior
-        Label(self.edit_wind, text = 'Importe Anterior').grid(row = 2, column = 1)
-        Entry(self.edit_wind, textvariable =StringVar(self.edit_wind, value = Importe_Anterior), state ='readonly').grid(row = 2, column = 2)
-        # Nuevo Importe
-        Label(self.edit_wind, text = 'Nuevo Importe').grid(row = 3, column = 1)
-        Nuevo_Importe = Entry(self.edit_wind)
-        Nuevo_Importe.grid(row = 3, column = 2)
+         # Old Price
+        Label(self.edit_wind, text = 'Importe actual: ').grid(row = 2, column = 1)
+        Entry(self.edit_wind, textvariable = StringVar(self.edit_wind, value = old_price), state = 'readonly').grid(row = 2, column = 2)
+        # New Price
+        Label(self.edit_wind, text = 'Nuevo importe').grid(row = 3, column = 1)
+        new_price = Entry(self.edit_wind)
+        new_price.grid(row = 3, column = 2)
 
-        Button(self.edit_wind, text = 'Actualizar', command = lambda: self.edit_records(new_name.get(), name, new_name.get(), old_price)).grid(row = 4, column = 2, sticky = W)
+        Button(self.edit_wind, text = 'Actualizar', command = lambda: self.edit_records(new_name.get(), name, new_price.get(), old_price)).grid(row = 4, column = 2, sticky = W)
 
-    def edit_records(self, Nuevo_Impuesto, Impuesto, Nuevo_Importe, Importe_Anterior):
-        query = 'UPDATE product SET Impuesto = ?, Importe = ? WHERE Impuesto = ? AND Importe = ?'
-        parameters = (Nuevo_Impuesto, Nuevo_Importe, Importe, Importe_Anterior)
+    def edit_records(self, new_name, name, new_price, old_price):
+        query = 'UPDATE product SET name = ?, price = ? WHERE name = ? AND price = ?'
+        parameters = (new_name, new_price, name, old_price)
         self.run_query(query, parameters)
         self.edit_wind.destroy()
-        self.message['text'] = 'Record {} updated Successfully'.format(Impuesto)
+        self.message['text'] = 'El impuesto {} fue modificado correctamente'.format(name)
         self.get_products()
 
-if __name__=='__main__':
+if __name__== '__main__':
     window = Tk()
     application = Product(window)
-    window.mainloop()
+    window.mainloop()      
